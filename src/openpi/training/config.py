@@ -194,8 +194,8 @@ class DataConfigFactory(abc.ABC):
             norm_stats = _normalize.load(_download.maybe_download(data_assets_dir))
             logging.info(f"Loaded norm stats from {data_assets_dir}")
             return norm_stats
-        except FileNotFoundError:
-            logging.info(f"Norm stats not found in {data_assets_dir}, skipping.")
+        except FileNotFoundError as e:
+            logging.warning(f"Norm stats not found in {data_assets_dir}, skipping.", exc_info=True)
         return None
 
 
