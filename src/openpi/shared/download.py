@@ -109,13 +109,13 @@ def _download_fsspec(url: str, local_path: pathlib.Path, **kwargs) -> None:
         total_size = info["size"]
     with tqdm.tqdm(total=total_size, unit="iB", unit_scale=True, unit_divisor=1024) as pbar:
         executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-        future = executor.submit(fs.get, url, local_path, recursive=is_dir)
+        future = executor.submit(fs.get, url, str(local_path), recursive=is_dir)
         while not future.done():
             current_size = sum(f.stat().st_size for f in [*local_path.rglob("*"), local_path] if f.is_file())
             pbar.update(current_size - pbar.n)
             time.sleep(1)
         pbar.update(total_size - pbar.n)
-
+        future.result()
 
 def _set_permission(path: pathlib.Path, target_permission: int):
     """chmod requires executable permission to be set, so we skip if the permission is already match with the target."""
